@@ -5,79 +5,60 @@ import java.util.Scanner;
 
 class Main {
     public static void main(String[] args) {
-        System.out.println("Welcome to Amazing Numbers!");
+        System.out.println("Welcome to Amazing Numbers!\n");
         instructions();
         execute();
     }
 
     static void execute() {
         Scanner scanner = new Scanner(System.in);
-        boolean run = true;
         do {
             long n1 = 0;
             int n2 = 0;
             System.out.print("\nEnter a request: ");
-            String input = scanner.nextLine();
+            String input = scanner.nextLine().toUpperCase();
             System.out.println();
-            switch (input.split(" ").length) {
-                case 1:
-                    if (input.length() == 0) {
-                        instructions();
-                        break;
-                    } else if (input.matches("[0-9]+")) {
-                        if (input.equals("0")) {
-                            run = false;
-                            break;
-                        }
-                        results(Long.parseLong(input));
-                    } else {
-                        System.out.println("The first parameter should be a natural number or zero.");
-                    }
-                    break;
-                case 2:
-                    if (input.split(" ")[0].matches("[1-9][0-9]*")) {
-                        n1 = Long.parseLong(input.split(" ")[0]);
-                    } else {
-                        System.out.println("The first parameter should be a natural number or zero.");
-                    }
-                    if (input.split(" ")[1].matches("[1-9][0-9]*")) {
-                        n2 = Integer.parseInt(input.split(" ")[1]);
-                        results(n1, n2);
-                    } else {
-                        System.out.println("The second parameter should be a natural number.");
-                    }
-                    break;
-                case 3:
-                    if (input.split(" ")[0].matches("[1-9][0-9]*")) {
-                        n1 = Long.parseLong(input.split(" ")[0]);
-                    } else {
-                        System.out.println("The first parameter should be a natural number or zero.");
-                    }
-                    if (input.split(" ")[1].matches("[1-9][0-9]*")) {
-                        n2 = Integer.parseInt(input.split(" ")[1]);
-                    } else {
-                        System.out.println("The second parameter should be a natural number.");
-                    }
-                    String input3 = input.split(" ")[2].toUpperCase();
-                    switch (input3) {
-                        case "BUZZ":
-                        case "DUCK":
-                        case "PALINDROMIC":
-                        case "GAPFUL":
-                        case "EVEN":
-                        case "ODD":
-                        case "SPY":
-                            results(n1, n2, input3);
-                            break;
-                        default:
-                            System.out.println("The property [" + input3 + "] is wrong.\n" +
-                                    "Available properties: [EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY]");
-                    }
-                    break;
-                default:
-                    break;
-            };
-        } while (run);
+            if (input.equals("0")) {
+                break;
+            } else if (input.length() == 0) {
+                instructions();
+                continue;
+            } else if (input.split(" ")[0].matches("[1-9][0-9]*")) {
+                n1 = Long.parseLong(input.split(" ")[0]);
+            } else {
+                System.out.println("The first parameter should be a natural number or zero.");
+                continue;
+            }
+            if (input.split(" ").length == 1) {
+                results(n1);
+                continue;
+            }
+            if (input.split(" ").length > 1) {
+                if (input.split(" ")[1].matches("[1-9][0-9]*")) {
+                    n2 = Integer.parseInt(input.split(" ")[1]);
+                } else {
+                    System.out.println("The second parameter should be a natural number.");
+                    continue;
+                }
+            }
+            if (input.split(" ").length == 2) {
+                results(n1, n2);
+                continue;
+            }
+            if (input.split(" ").length > 2) {
+                if (isWrong(input)) {
+                    continue;
+                }
+            }
+            if (input.split(" ").length > 3) {
+                if (isOpposite(input)) {
+                    continue;
+                }
+            }
+            if (input.split(" ").length > 2) {
+                results(n1, n2, input);
+            }
+        } while (true);
         System.out.println("Goodbye!");
     }
 
@@ -88,57 +69,78 @@ class Main {
                 "  * the first parameter represents a starting number;\n" +
                 "  * the second parameter shows how many consecutive numbers are to be printed;\n" +
                 "- two natural numbers and a property to search for;\n" +
+                "- two natural numbers and two properties to search for;\n" +
                 "- separate the parameters with one space;\n" +
                 "- enter 0 to exit.");
     }
 
-    static void results(long n1, int n2, String input3) {
+    static boolean isOpposite(String input) {
+        String[][] opposite = {{"EVEN", "DUCK", "SUNNY"}, {"ODD", "SPY", "SQUARE"}};
+        for (int i = 0; i < opposite[0].length; i++) {
+            if (input.contains(opposite[0][i]) && input.contains(opposite[1][i])) {
+                System.out.println("The request contains mutually exclusive properties: [" +
+                        opposite[0][i] + ", " + opposite[1][i] + "]\n" +
+                        "There are no numbers with these properties.");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static boolean isWrong(String input) {
+        String properties = "EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY";
+        StringBuilder output = new StringBuilder("");
+        int result = 0;
+        for (int i = 2; i < input.split(" ").length; i++) {
+            if (!properties.contains(input.split(" ")[i])) {
+                result += 1;
+                output.append(input.split(" ")[i] + ", ");
+            }
+        }
+        if (result == 1) {
+            output.delete(output.length() - 2, output.length());
+            System.out.println("The property [" + output + "] is wrong.\n" +
+                    "Available properties: " + properties);
+        } else if (result > 1) {
+            output.delete(output.length() - 2, output.length());
+            System.out.println("The properties [" + output + "] are wrong.\n" +
+                    "Available properties: " + properties);
+        }
+        return result > 0;
+    }
+
+    static void results(long n1, int n2, String input) {
         long n = n1;
         for (int i = 0; i < n2; n++) {
-            switch (input3) {
-                case "BUZZ":
-                    if (buzz(n)) {
-                        results(n, 1);
-                        i++;
-                    }
-                    break;
-                case "DUCK":
-                    if (duck(n)) {
-                        results(n, 1);
-                        i++;
-                    }
-                    break;
-                case "PALINDROMIC":
-                    if (palindromic(n)) {
-                        results(n, 1);
-                        i++;
-                    }
-                    break;
-                case "GAPFUL":
-                    if (gapful(n)) {
-                        results(n, 1);
-                        i++;
-                    }
-                    break;
-                case "EVEN":
-                    if (even(n)) {
-                        results(n, 1);
-                        i++;
-                    }
-                    break;
-                case "ODD":
-                    if (odd(n)) {
-                        results(n, 1);
-                        i++;
-                    }
-                    break;
-                case "SPY":
-                    if (spy(n)) {
-                        results(n, 1);
-                        i++;
-                    }
-                    break;
+            if (input.contains("SQUARE")) {
+                if (!square(n)) continue;
             }
+            if (input.contains("SUNNY")) {
+                if (!sunny(n)) continue;
+            }
+            if (input.contains("SPY")) {
+                if (!spy(n)) continue;
+            }
+            if (input.contains("GAPFUL")) {
+                if (!gapful(n)) continue;
+            }
+            if (input.contains("PALINDROMIC")) {
+                if (!palindromic(n)) continue;
+            }
+            if (input.contains("DUCK")) {
+                if (!duck(n)) continue;
+            }
+            if (input.contains("BUZZ")) {
+                if (!buzz(n)) continue;
+            }
+            if (input.contains("EVEN")) {
+                if (!even(n)) continue;
+            }
+            if (input.contains("ODD")) {
+                if (!odd(n)) continue;
+            }
+            results(n, 1);
+            i++;
         }
     }
 
@@ -163,6 +165,12 @@ class Main {
             if (spy(n)) {
                 System.out.print(j++ > 0 ? ", spy": "spy");
             }
+            if (square(n)) {
+                System.out.print(j++ > 0 ? ", square": "square");
+            }
+            if (sunny(n)) {
+                System.out.print(j++ > 0 ? ", sunny": "sunny");
+            }
             if (even(n)) {
                 System.out.print(j++ > 0 ? ", even": "even");
             }
@@ -181,6 +189,8 @@ class Main {
         System.out.println(" palindromic: " + palindromic(n));
         System.out.println("      gapful: " + gapful(n));
         System.out.println("         spy: " + spy(n));
+        System.out.println("      square: " + square(n));
+        System.out.println("       sunny: " + sunny(n));
         System.out.println("        even: " + even(n));
         System.out.println("         odd: " + odd(n));
     }
@@ -241,5 +251,15 @@ class Main {
             result2 *= Character.getNumericValue(str.charAt(i));
         }
         return result1 == result2;
+    }
+
+    static boolean sunny(long n) {
+        int root = (int) Math.sqrt(n + 1);
+        return (long) root * root == n + 1;
+    }
+
+    static boolean square(long n) {
+        int root = (int) Math.sqrt(n);
+        return (long) root * root == n;
     }
 }
