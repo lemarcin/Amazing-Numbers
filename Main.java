@@ -3,6 +3,8 @@ import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.Scanner;
 
+import static java.lang.String.valueOf;
+
 class Main {
     public static void main(String[] args) {
         System.out.println("Welcome to Amazing Numbers!\n");
@@ -68,8 +70,7 @@ class Main {
                 "- enter two natural numbers to obtain the properties of the list:\n" +
                 "  * the first parameter represents a starting number;\n" +
                 "  * the second parameter shows how many consecutive numbers are to be printed;\n" +
-                "- two natural numbers and a property to search for;\n" +
-                "- two natural numbers and two properties to search for;\n" +
+                "- two natural numbers and properties to search for;" +
                 "- separate the parameters with one space;\n" +
                 "- enter 0 to exit.");
     }
@@ -88,7 +89,7 @@ class Main {
     }
 
     static boolean isWrong(String input) {
-        String properties = "EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY";
+        String properties = "EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING";
         StringBuilder output = new StringBuilder("");
         int result = 0;
         for (int i = 2; i < input.split(" ").length; i++) {
@@ -112,33 +113,16 @@ class Main {
     static void results(long n1, int n2, String input) {
         long n = n1;
         for (int i = 0; i < n2; n++) {
-            if (input.contains("SQUARE")) {
-                if (!square(n)) continue;
-            }
-            if (input.contains("SUNNY")) {
-                if (!sunny(n)) continue;
-            }
-            if (input.contains("SPY")) {
-                if (!spy(n)) continue;
-            }
-            if (input.contains("GAPFUL")) {
-                if (!gapful(n)) continue;
-            }
-            if (input.contains("PALINDROMIC")) {
-                if (!palindromic(n)) continue;
-            }
-            if (input.contains("DUCK")) {
-                if (!duck(n)) continue;
-            }
-            if (input.contains("BUZZ")) {
-                if (!buzz(n)) continue;
-            }
-            if (input.contains("EVEN")) {
-                if (!even(n)) continue;
-            }
-            if (input.contains("ODD")) {
-                if (!odd(n)) continue;
-            }
+            if (input.contains("SQUARE") && !square(n)) continue;
+            if (input.contains("SUNNY") && !sunny(n)) continue;
+            if (input.contains("SPY") && !spy(n)) continue;
+            if (input.contains("GAPFUL") && !gapful(n)) continue;
+            if (input.contains("PALINDROMIC") && !palindromic(n)) continue;
+            if (input.contains("DUCK") && !duck(n)) continue;
+            if (input.contains("BUZZ") && !buzz(n)) continue;
+            if (input.contains("EVEN") && !even(n)) continue;
+            if (input.contains("ODD") && !odd(n)) continue;
+            if (input.contains("JUMPING") && !jumping(n)) continue;
             results(n, 1);
             i++;
         }
@@ -147,37 +131,20 @@ class Main {
     static void results(long n1, int n2) {
         long n = n1;
         for (int i = 0; i < n2; i++, n++) {
-            int j = 0;
-            System.out.print(n + " is ");
-            if (buzz(n)) {
-                System.out.print("buzz");
-                j++;
-            }
-            if (duck(n)) {
-                System.out.print(j++ > 0 ? ", duck": "duck");
-            }
-            if (palindromic(n)) {
-                System.out.print(j++ > 0 ? ", palindromic": "palindromic");
-            }
-            if (gapful(n)) {
-                System.out.print(j++ > 0 ? ", gapful": "gapful");
-            }
-            if (spy(n)) {
-                System.out.print(j++ > 0 ? ", spy": "spy");
-            }
-            if (square(n)) {
-                System.out.print(j++ > 0 ? ", square": "square");
-            }
-            if (sunny(n)) {
-                System.out.print(j++ > 0 ? ", sunny": "sunny");
-            }
-            if (even(n)) {
-                System.out.print(j++ > 0 ? ", even": "even");
-            }
-            if (odd(n)) {
-                System.out.print(j > 0 ? ", odd": "odd");
-            }
-            System.out.println("");
+            StringBuilder output = new StringBuilder(valueOf(n));
+            output.append(" is ");
+            output.append(buzz(n) ? "buzz, " : "");
+            output.append(duck(n) ? "duck, " : "");
+            output.append(palindromic(n) ? "palindromic, " : "");
+            output.append(gapful(n) ? "gapful, " : "");
+            output.append(spy(n) ? "spy, ": "");
+            output.append(square(n) ? "square, ": "");
+            output.append(sunny(n) ? "sunny, ": "");
+            output.append(jumping(n) ? "jumping, ": "");
+            output.append(even(n) ? "even, ": "");
+            output.append(odd(n) ? "odd, ": "");
+            output.delete(output.length() - 2, output.length());
+            System.out.println(output);
         }
     }
 
@@ -191,6 +158,7 @@ class Main {
         System.out.println("         spy: " + spy(n));
         System.out.println("      square: " + square(n));
         System.out.println("       sunny: " + sunny(n));
+        System.out.println("     jumping: " + jumping(n));
         System.out.println("        even: " + even(n));
         System.out.println("         odd: " + odd(n));
     }
@@ -261,5 +229,20 @@ class Main {
     static boolean square(long n) {
         int root = (int) Math.sqrt(n);
         return (long) root * root == n;
+    }
+
+    static boolean jumping(long n) {
+        if (n > 9) {
+            long number = n;
+            long firstDigit = number % 10;
+            number /= 10;
+            while (number != 0) {
+                if (Math.abs(firstDigit - number % 10) != 1) return false;
+                firstDigit = number % 10;
+                number /= 10;
+            }
+            return true;
+        }
+        return true;
     }
 }
