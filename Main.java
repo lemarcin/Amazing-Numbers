@@ -70,13 +70,17 @@ class Main {
                 "- enter two natural numbers to obtain the properties of the list:\n" +
                 "  * the first parameter represents a starting number;\n" +
                 "  * the second parameter shows how many consecutive numbers are to be printed;\n" +
-                "- two natural numbers and properties to search for;" +
+                "- two natural numbers and properties to search for;\n" +
+                "- a property preceded by minus must not be present in numbers;\n" +
                 "- separate the parameters with one space;\n" +
                 "- enter 0 to exit.");
     }
 
     static boolean isOpposite(String input) {
-        String[][] opposite = {{"EVEN", "DUCK", "SUNNY"}, {"ODD", "SPY", "SQUARE"}};
+        String[][] opposite = {{"-EVEN", " EVEN", " DUCK", " SUNNY", " SAD", " EVEN", " ODD", " BUZZ", " DUCK", " PALINDROMIC",
+                " GAPFUL", " SPY", " SQUARE", " SUNNY", " JUMPING", " HAPPY", " SAD"},
+                {"-ODD", " ODD", " SPY", " SQUARE", " HAPPY", "-EVEN", "-ODD", "-BUZZ", "-DUCK", "-PALINDROMIC", "-GAPFUL",
+                        "-SPY", "-SQUARE", "-SUNNY", "-JUMPING", "-HAPPY", "-SAD"}};
         for (int i = 0; i < opposite[0].length; i++) {
             if (input.contains(opposite[0][i]) && input.contains(opposite[1][i])) {
                 System.out.println("The request contains mutually exclusive properties: [" +
@@ -89,7 +93,8 @@ class Main {
     }
 
     static boolean isWrong(String input) {
-        String properties = "EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING";
+        String properties = " EVEN, ODD, BUZZ, DUCK, PALINDROMIC, GAPFUL, SPY, SQUARE, SUNNY, JUMPING, HAPPY, SAD, " +
+                "-EVEN, -ODD, -BUZZ, -DUCK, -PALINDROMIC, -GAPFUL, -SPY, -SQUARE, -SUNNY, -JUMPING, -HAPPY, -SAD";
         StringBuilder output = new StringBuilder("");
         int result = 0;
         for (int i = 2; i < input.split(" ").length; i++) {
@@ -113,16 +118,30 @@ class Main {
     static void results(long n1, int n2, String input) {
         long n = n1;
         for (int i = 0; i < n2; n++) {
-            if (input.contains("SQUARE") && !square(n)) continue;
-            if (input.contains("SUNNY") && !sunny(n)) continue;
-            if (input.contains("SPY") && !spy(n)) continue;
-            if (input.contains("GAPFUL") && !gapful(n)) continue;
-            if (input.contains("PALINDROMIC") && !palindromic(n)) continue;
-            if (input.contains("DUCK") && !duck(n)) continue;
-            if (input.contains("BUZZ") && !buzz(n)) continue;
-            if (input.contains("EVEN") && !even(n)) continue;
-            if (input.contains("ODD") && !odd(n)) continue;
-            if (input.contains("JUMPING") && !jumping(n)) continue;
+            if (input.contains("-SQUARE") && isSquare(n)) continue;
+            if (input.contains("-SUNNY") && isSunny(n)) continue;
+            if (input.contains("-SPY") && isSpy(n)) continue;
+            if (input.contains("-GAPFUL") && isGapful(n)) continue;
+            if (input.contains("-PALINDROMIC") && isPalindromic(n)) continue;
+            if (input.contains("-DUCK") && isDuck(n)) continue;
+            if (input.contains("-BUZZ") && isBuzz(n)) continue;
+            if (input.contains("-EVEN") && isEven(n)) continue;
+            if (input.contains("-ODD") && isOdd(n)) continue;
+            if (input.contains("-JUMPING") && isJumping(n)) continue;
+            if (input.contains("-HAPPY") && isHappy(n)) continue;
+            if (input.contains("-SAD") && isSad(n)) continue;
+            if (input.contains(" SQUARE") && !isSquare(n)) continue;
+            if (input.contains(" SUNNY") && !isSunny(n)) continue;
+            if (input.contains(" SPY") && !isSpy(n)) continue;
+            if (input.contains(" GAPFUL") && !isGapful(n)) continue;
+            if (input.contains(" PALINDROMIC") && !isPalindromic(n)) continue;
+            if (input.contains(" DUCK") && !isDuck(n)) continue;
+            if (input.contains(" BUZZ") && !isBuzz(n)) continue;
+            if (input.contains(" EVEN") && !isEven(n)) continue;
+            if (input.contains(" ODD") && !isOdd(n)) continue;
+            if (input.contains(" JUMPING") && !isJumping(n)) continue;
+            if (input.contains(" HAPPY") && !isHappy(n)) continue;
+            if (input.contains(" SAD") && !isSad(n)) continue;
             results(n, 1);
             i++;
         }
@@ -133,16 +152,18 @@ class Main {
         for (int i = 0; i < n2; i++, n++) {
             StringBuilder output = new StringBuilder(valueOf(n));
             output.append(" is ");
-            output.append(buzz(n) ? "buzz, " : "");
-            output.append(duck(n) ? "duck, " : "");
-            output.append(palindromic(n) ? "palindromic, " : "");
-            output.append(gapful(n) ? "gapful, " : "");
-            output.append(spy(n) ? "spy, ": "");
-            output.append(square(n) ? "square, ": "");
-            output.append(sunny(n) ? "sunny, ": "");
-            output.append(jumping(n) ? "jumping, ": "");
-            output.append(even(n) ? "even, ": "");
-            output.append(odd(n) ? "odd, ": "");
+            output.append(isEven(n) ? "even, " : "");
+            output.append(isOdd(n) ? "odd, " : "");
+            output.append(isBuzz(n) ? "buzz, " : "");
+            output.append(isDuck(n) ? "duck, " : "");
+            output.append(isPalindromic(n) ? "palindromic, " : "");
+            output.append(isGapful(n) ? "gapful, " : "");
+            output.append(isSpy(n) ? "spy, " : "");
+            output.append(isSquare(n) ? "square, " : "");
+            output.append(isSunny(n) ? "sunny, " : "");
+            output.append(isJumping(n) ? "jumping, " : "");
+            output.append(isHappy(n) ? "happy, " : "");
+            output.append(isSad(n) ? "sad, " : "");
             output.delete(output.length() - 2, output.length());
             System.out.println(output);
         }
@@ -151,33 +172,29 @@ class Main {
     static void results(long n) {
         NumberFormat format = NumberFormat.getInstance(new Locale("en", "US"));
         System.out.println("Properties of " + format.format(n));
-        System.out.println("        buzz: " + buzz(n));
-        System.out.println("        duck: " + duck(n));
-        System.out.println(" palindromic: " + palindromic(n));
-        System.out.println("      gapful: " + gapful(n));
-        System.out.println("         spy: " + spy(n));
-        System.out.println("      square: " + square(n));
-        System.out.println("       sunny: " + sunny(n));
-        System.out.println("     jumping: " + jumping(n));
-        System.out.println("        even: " + even(n));
-        System.out.println("         odd: " + odd(n));
+        System.out.println("        buzz: " + isBuzz(n));
+        System.out.println("        duck: " + isDuck(n));
+        System.out.println(" palindromic: " + isPalindromic(n));
+        System.out.println("      gapful: " + isGapful(n));
+        System.out.println("         spy: " + isSpy(n));
+        System.out.println("      square: " + isSquare(n));
+        System.out.println("       sunny: " + isSunny(n));
+        System.out.println("     jumping: " + isJumping(n));
+        System.out.println("        even: " + isEven(n));
+        System.out.println("         odd: " + isOdd(n));
+        System.out.println("       happy: " + isHappy(n));
+        System.out.println("         sad: " + isSad(n));
     }
 
-    static boolean buzz(long n) {
+    static boolean isBuzz(long n) {
         return (n % 10 == 7 || n % 7 == 0);
     }
 
-    static boolean duck(long n) {
-        long n2 = n;
-        while (n2 > 0) {
-            if (n2 % 10 == 0)
-                return true;
-            n2 /= 10;
-        }
-        return false;
+    static boolean isDuck(long n) {
+        return String.valueOf(n).contains("0");
     }
 
-    static boolean palindromic(long n) {
+    static boolean isPalindromic(long n) {
         String str = Long.toString(n);
         int i = 0, j = str.length() - 1;
         while (i < j) {
@@ -189,60 +206,75 @@ class Main {
         return true;
     }
 
-    static boolean gapful(long n) {
-        if (n > 99) {
-            long firstDigit = 0;
-            long number = n;
-            while(number != 0) {
-                firstDigit = number % 10;
-                number /= 10;
-            }
-            return n % (firstDigit * 10 + n % 10) == 0;
-        }
-            return false;
+    static boolean isGapful(long n) {
+        String[] digits = valueOf(n).split("");
+        return n  > 99 && n % Integer.parseInt(digits[0] + digits[digits.length - 1]) == 0;
     }
 
-    static boolean even(long n) {
+    static boolean isEven(long n) {
         return n % 2 == 0;
     }
 
-    static boolean odd(long n) {
+    static boolean isOdd(long n) {
         return n % 2 != 0;
     }
 
-    static boolean spy(long n) {
-        String str = Long.toString(n);
-        long result1 = 0;
-        long result2 = 1;
-        for (int i = 0; i < str.length(); i++) {
-            result1 += Character.getNumericValue(str.charAt(i));
-            result2 *= Character.getNumericValue(str.charAt(i));
+    static boolean isSpy(long n) {
+        String[] digits = String.valueOf(n).split("");
+        int Sum = 0;
+        int Prod = 1;
+        for (String digit : digits) {
+            Sum += Integer.parseInt(digit);
+            Prod *= Integer.parseInt(digit);
         }
-        return result1 == result2;
+        return Sum == Prod;
     }
 
-    static boolean sunny(long n) {
-        int root = (int) Math.sqrt(n + 1);
-        return (long) root * root == n + 1;
+    static boolean isSunny(long n) {
+        return (n + 1) % Math.sqrt(n + 1) == 0;
     }
 
-    static boolean square(long n) {
-        int root = (int) Math.sqrt(n);
-        return (long) root * root == n;
+    static boolean isSquare(long n) {
+        return n % Math.sqrt(n) == 0;
     }
 
-    static boolean jumping(long n) {
-        if (n > 9) {
-            long number = n;
-            long firstDigit = number % 10;
-            number /= 10;
-            while (number != 0) {
-                if (Math.abs(firstDigit - number % 10) != 1) return false;
-                firstDigit = number % 10;
-                number /= 10;
+    static boolean isJumping(long n) {
+        String[] digits = String.valueOf(n).split("");
+        for (int i = 0; i < digits.length - 1; i++) {
+            if (Math.abs(Long.parseLong(digits[i]) - Long.parseLong(digits[i + 1])) != 1) {
+                return false;
             }
-            return true;
         }
+        return true;
+    }
+
+    static boolean isHappy(long n) {
+        int sum = 0;
+        long number = n;
+        do {
+            String[] digits = String.valueOf(number).split("");
+            for (String digit : digits) {
+                sum += Integer.parseInt(digit) * Integer.parseInt(digit);
+            }
+            if (sum == 1) return true;
+            number = sum;
+            sum = 0;
+        } while (!(number == n || number == 4));
+        return false;
+    }
+
+    static boolean isSad(long n) {
+        int sum = 0;
+        long number = n;
+        do {
+            String[] digits = String.valueOf(number).split("");
+            for (String digit : digits) {
+                sum += Integer.parseInt(digit) * Integer.parseInt(digit);
+            }
+            if (sum == 1) return false;
+            number = sum;
+            sum = 0;
+        } while (!(number == n || number == 4));
         return true;
     }
 }
